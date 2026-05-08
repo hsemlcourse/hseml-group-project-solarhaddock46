@@ -37,13 +37,13 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     for col in ["workclass", "occupation", "native.country"]:
         df[col] = df[col].fillna(df[col].mode()[0])
 
+    df[TARGET] = (df[TARGET].str.strip() == ">50K").astype(int)
+
     df = df.drop_duplicates()
     df = df.reset_index(drop=True)
 
     for col in CAT_COLS:
         df[col] = df[col].astype("category")
-
-    df[TARGET] = (df[TARGET].str.strip() == ">50K").astype(int)
 
     return df
 
