@@ -1,64 +1,60 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kOqwghv0)
-# ML Project — [Название проекта]
+# Классификация уровня дохода по социально-демографическому профилю
 
-**Студент:** [ФИО / Student ID]
+**Студент:** Мацнев Владимир Дмитриевич 
 
-**Группа:** [Группа]
+**Группа:** БИВ232
 
 
 ## Оглавление
 
 1. [Описание задачи](#описание-задачи)
 2. [Структура репозитория](#структура-репозитория)
-3. [Запуски](#быстрый-старт)
+3. [Запуск](#запуск)
 4. [Данные](#данные)
 5. [Результаты](#результаты)
-7. [Отчёт](#отчёт)
+6. [Отчёт](#отчёт)
 
 
 ## Описание задачи
 
-<!-- Кратко опишите задачу: что предсказываем, какой датасет, метрика качества -->
+Бинарная классификация уровня годового дохода жителей США (`<=50K` / `>50K`) по социально-демографическому профилю на основе данных переписи населения 1994 года.
 
-**Задача:** [Классификация / Регрессия / Кластеризация / ...]
+**Задача:** Бинарная классификация
 
-**Датасет:** [Название и источник датасета]
+**Датасет:** [Adult Census Income — UCI / Kaggle](https://www.kaggle.com/datasets/uciml/adult-census-income) — 32 537 строк, 14 признаков
 
-**Целевая метрика:** [Accuracy / F1 / RMSE / ...]
+**Целевая метрика:** ROC-AUC (основная), F1-macro (дополнительная)
 
 
 ## Структура репозитория
-Опишите структуру проекта, сохранив при этом верхнеуровневые папки. Можно добавить новые при необходимости.
+
 ```
 .
 ├── data
-│   ├── processed               # Очищенные и обработанные данные
-│   └── raw                     # Исходные файлы
-├── models                      # Сохранённые модели 
+│   ├── processed/              # Очищенные данные (adult_processed.csv, gitignored)
+│   └── raw/                    # Исходные файлы (adult.csv, gitignored)
+├── models/                     # Сохранённые модели (gitignored)
 ├── notebooks
-│   ├── 01_eda.ipynb            # EDA
-│   ├── 02_baseline.ipynb       # Baseline-модель
-│   └── 03_experiments.ipynb    # Эксперименты и ablation study
-├── presentation                # Презентация для защиты
+│   ├── 01_eda.ipynb            # EDA: очистка, визуализации, feature engineering, сплит
+│   └── 02_baseline.ipynb       # Baseline: LogisticRegression, метрики на val/test
+├── presentation/               # Презентация для защиты
 ├── report
-│   ├── images                  # Изображения для отчёта
 │   └── report.md               # Финальный отчёт
 ├── src
-│   ├── preprocessing.py        # Предобработка данных
-│   └── modeling.py             # Обучение и оценка моделей
+│   └── preprocessing.py        # Функции загрузки, очистки, FE, сплита
 ├── tests
-│   └── test.py                 # Тесты пайплайна
+│   └── test.py                 # Smoke-тесты пайплайна предобработки
 ├── requirements.txt
 └── README.md
 ```
 
 ## Запуск
 
-Этот блок замените способом запуска вашего сервиса.
 ```bash
 # 1. Клонировать репозиторий
-git clone <url>
-cd <repo-name>
+git clone https://github.com/hsemlcourse/hseml-group-project-solarhaddock46.git
+cd hseml-group-project-solarhaddock46
 
 # 2. Создать виртуальное окружение
 python -m venv .venv
@@ -67,19 +63,34 @@ source .venv/bin/activate   # Linux/macOS
 
 # 3. Установить зависимости
 pip install -r requirements.txt
+
+# 4. Скачать датасет (вручную с Kaggle) и положить в:
+#    data/raw/adult.csv
+
+# 5. Запустить ноутбуки по порядку
+jupyter notebook
+
+# 6. Прогнать тесты
+pytest tests/test.py -v
 ```
 
 ## Данные
-- `data/raw/` — исходные файлы
-- `data/processed/` — предобработанные данные
+
+- `data/raw/adult.csv` — исходный датасет (не коммитится, скачать с [Kaggle](https://www.kaggle.com/datasets/uciml/adult-census-income))
+- `data/processed/adult_processed.csv` — очищенный датасет с новыми фичами (генерируется `01_eda.ipynb`)
+
+**Особенности датасета:**
+- 32 561 строка, 15 столбцов (14 признаков + таргет)
+- Пропуски закодированы как `?` в столбцах `workclass`, `occupation`, `native.country`
+- Дисбаланс классов: ~76% `<=50K`, ~24% `>50K`
 
 
 ## Результаты
-Здесь коротко выпишите результаты.
-| Модель | [Метрика 1] | [Метрика 2] | Примечание |
-|--------|-------------|-------------|------------|
-| Baseline | — | — | |
-| Лучшая модель | — | — | |
+
+| Модель | ROC-AUC | F1-macro | Примечание |
+|--------|---------|----------|------------|
+| Baseline (LogisticRegression) | 0.8515 | 0.7201 | test, без feature engineering |
+| Лучшая модель | — | — | CP2 |
 
 
 ## Отчёт
