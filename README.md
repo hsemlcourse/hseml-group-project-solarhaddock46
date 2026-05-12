@@ -14,6 +14,7 @@
 4. [Данные](#данные)
 5. [Результаты](#результаты)
 6. [Отчёт](#отчёт)
+7. [Линтер](#линтер)
 
 
 ## Описание задачи
@@ -37,14 +38,18 @@
 ├── models/                     # Сохранённые модели (gitignored)
 ├── notebooks
 │   ├── 01_eda.ipynb            # EDA: очистка, визуализации, feature engineering, сплит
-│   └── 02_baseline.ipynb       # Baseline: LogisticRegression, метрики на val/test
+│   ├── 02_baseline.ipynb       # Baseline: LogisticRegression, метрики на val/test
+│   └── 03_experiments.ipynb    # Эксперименты: 4-5 моделей, тюнинг, PCA, финальная модель
 ├── presentation/               # Презентация для защиты
 ├── report
 │   └── report.md               # Финальный отчёт
 ├── src
-│   └── preprocessing.py        # Функции загрузки, очистки, FE, сплита
+│   ├── fetch_data.py           # Загрузка датасета через UCI ML Repository API
+│   ├── preprocessing.py        # Функции загрузки, очистки, FE, сплита
+│   └── train.py                # build_pipeline, evaluate, save_model
 ├── tests
 │   └── test.py                 # Smoke-тесты пайплайна предобработки
+├── Makefile
 ├── requirements.txt
 └── README.md
 ```
@@ -64,8 +69,8 @@ source .venv/bin/activate   # Linux/macOS
 # 3. Установить зависимости
 pip install -r requirements.txt
 
-# 4. Скачать датасет (вручную с Kaggle) и положить в:
-#    data/raw/adult.csv
+# 4. Загрузить датасет через UCI ML Repository (автоматически сохраняется в data/raw/adult.csv)
+python src/fetch_data.py
 
 # 5. Запустить ноутбуки по порядку
 jupyter notebook
@@ -87,12 +92,30 @@ pytest tests/test.py -v
 
 ## Результаты
 
-| Модель | ROC-AUC | F1-macro | Примечание |
-|--------|---------|----------|------------|
-| Baseline (LogisticRegression) | 0.8515 | 0.7201 | test, без feature engineering |
-| Лучшая модель | — | — | CP2 |
+| Модель | ROC-AUC (val) | F1-macro (val) | Примечание |
+|--------|---------------|----------------|------------|
+| Baseline (LogisticRegression) | 0.8536 | 0.7266 | дефолт, без FE |
+| DecisionTree | 0.6498 | 0.6491 | переобучение на train |
+| RandomForest (дефолт) | 0.8535 | 0.6716 | часть 1 экспериментов |
+| GradientBoosting (дефолт) | 0.8774 | 0.6940 | часть 1 экспериментов |
+| XGBoost (дефолт) | 0.8792 | 0.6935 | часть 1 экспериментов |
+| LightGBM (дефолт) | 0.8837 | 0.6980 | часть 1 экспериментов |
+| RandomForest (тюнинг) | 0.8766 | 0.6596 | RandomizedSearchCV |
+| VotingClassifier (LGBM+XGB+GB) | 0.8834 | 0.6965 | ансамбль |
+| LightGBM (тюнинг) | 0.8843 | 0.6982 | финальная модель, test ROC-AUC 0.8756 |
 
 
 ## Отчёт
 
 Финальный отчёт: [`report/report.md`](report/report.md)
+
+
+## Линтер
+
+```bash
+# Запустить flake8 через make
+make lint
+
+# Или напрямую
+flake8 src/ tests/
+```
