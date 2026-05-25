@@ -1,11 +1,7 @@
-import sys
 import os
 
-import numpy as np
 import pandas as pd
 import pytest
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from preprocessing import (
     CAT_COLS,
