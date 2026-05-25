@@ -24,6 +24,14 @@ NUM_COLS = [
     "hours.per.week",
 ]
 
+FEATURE_COLS = CAT_COLS + NUM_COLS
+
+IMPUTE_DEFAULTS = {
+    "workclass": "Private",
+    "occupation": "Prof-specialty",
+    "native.country": "United-States",
+}
+
 
 def load_raw_data(path: str) -> pd.DataFrame:
     return pd.read_csv(path)
@@ -46,6 +54,21 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         df[col] = df[col].astype("category")
 
     return df
+
+
+def build_inference_dataframe(features: dict) -> pd.DataFrame:
+    row = {col: features[col] for col in FEATURE_COLS}
+    df = pd.DataFrame([row])
+    df = df.replace("?", np.nan)
+
+    for col in ["workclass", "occupation", "native.country"]:
+        if df[col].isna().any():
+            df[col] = df[col].fillna(IMPUTE_DEFAULTS[col])
+
+    for col in CAT_COLS:
+        df[col] = df[col].astype("category")
+
+    return df[FEATURE_COLS]
 
 
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
