@@ -1,5 +1,3 @@
-"""Генерирует app/categories.json из data/raw/adult.csv."""
-
 import json
 import os
 import sys
@@ -8,7 +6,7 @@ import pandas as pd
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from preprocessing import CAT_COLS, load_raw_data  # noqa: E402
+from preprocessing import CAT_COLS, load_raw_data
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 DATA_PATH = os.path.join(ROOT, "data", "raw", "adult.csv")

@@ -2,12 +2,11 @@ import json
 import os
 import sys
 
-import streamlit as st
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from inference import get_model_path, load_model, predict_income  # noqa: E402
-from preprocessing import CAT_COLS, NUM_COLS  # noqa: E402
+import streamlit as st
+from inference import get_model_path, load_model, predict_income
+from preprocessing import CAT_COLS, NUM_COLS
 
 CATEGORIES_PATH = os.path.join(os.path.dirname(__file__), "categories.json")
 
